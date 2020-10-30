@@ -88,6 +88,35 @@ for entry in range(counter_data):
         sock.sendall(new_data)
         sock.settimeout(3)
 
+        # Checking for the timeout and the acks received
+        try:
+            
+            # Extracting the 20 byte ack that the server sends
+            rec_data = sock.recv(21)
+            
+            sock.settimeout(0)
+            recdata = rec_data
+
+            # Extracting teh ack value and the sent client time value
+            recAck = rec_data[0:10]
+            recAck=float(recAck)
+            recTime = rec_data[10:20]
+
+            print("head=",head,"ack=",recAck)
+            print("REceived time ",recTime)
+
+            # Calculating the actual round trip time/delay taken
+            recTime=float(recTime)
+            tim=time.time()-recTime
+            flag = True
+
+        except socket.timeout:
+
+            # Timeout has occured and evasive actions being taken
+            print("timeout as ack not received")
+            flagfilesent=False
+            sock.settimeout(0)
+
 
     # We check if the packet has not been resent again and if the ack received is not
     # consistent or if the packet has to be discarded due to non-receiveing of acks
